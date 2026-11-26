@@ -1,0 +1,31 @@
+# The Walnut sample: a tiny "game" (a shell script) and placeholder art.
+#   walnut build examples/hello/project.toml -o hello-installer
+[game]
+name = "Hello Walnut"
+id = "hello-walnut"
+version = "0.1.0"
+publisher = "Walnut Installer samples"
+folder = "game"
+executable = "hello.sh"
+icon = "art/icon.png"
+default_install_dir = "~/.local/share/{id}"
+
+[desktop]
+entry = true
+shortcut = false
+comment = "A tiny sample game, installed by Walnut Installer"
+categories = ["Game"]
+
+[steam]
+offer = true
+ticked = true
+tags = ["Walnut sample"]
+portrait = "art/steam_portrait.png"
+wide = "art/steam_wide.png"
+hero = "art/steam_hero.png"
+logo = "art/steam_logo.png"
+icon = "art/steam_icon.png"
+
+[text]
+welcome = "Welcome! This installs the Walnut sample game."
+done = "Run it from your applications menu, or from Steam."

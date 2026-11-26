@@ -1,0 +1,11 @@
+[package]
+name = "walnut-installer"
+description = "Walnut Installer: the program inside every installer (installs, adds to Steam, uninstalls)."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[dependencies]
+walnut-core = { path = "../walnut-core" }

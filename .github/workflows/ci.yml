@@ -1,0 +1,21 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-musl
+      - run: sudo apt-get update && sudo apt-get install -y musl-tools
+      - run: cargo test --workspace
+      - name: Static (musl) release build
+        run: cargo build --release --target x86_64-unknown-linux-musl
+      - name: The sample, end to end
+        run: WALNUT_BIN=target/x86_64-unknown-linux-musl/release ./scripts/e2e.sh

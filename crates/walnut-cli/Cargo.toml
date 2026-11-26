@@ -1,0 +1,15 @@
+[package]
+name = "walnut-cli"
+description = "Walnut Installer: builds a game installer from a project file, headless (CI)."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[dependencies]
+walnut-core = { path = "../walnut-core" }
+
+[[bin]]
+name = "walnut"
+path = "src/main.rs"
