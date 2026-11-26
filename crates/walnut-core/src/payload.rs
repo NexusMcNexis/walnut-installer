@@ -59,6 +59,30 @@ pub struct Layout {
     pub footer: Footer,
 }
 
+/// M2: where the welcome art sits in the payload (always its first entry).
+pub const WELCOME_ART: &str = ".walnut/welcome.png";
+/// The most a peeked file may be (art, not the game).
+const PEEK_MOST: u64 = 16 * 1024 * 1024;
+
+/// M2: the payload's first file when it is `name`, read without unpacking
+/// anything (the builder puts the welcome art first); None otherwise. The
+/// caller has verified the installer first.
+pub fn peek(path: &Path, layout: &Layout, name: &str) -> io::Result<Option<Vec<u8>>> {
+    let mut file = File::open(path)?;
+    file.seek(SeekFrom::Start(layout.payload_at))?;
+    let decoder = ruzstd::decoding::StreamingDecoder::new(file.take(layout.footer.payload_len)).map_err(|e| invalid(&format!("payload: {e}")))?;
+    let mut archive = tar::Archive::new(decoder);
+    let first = archive.entries()?.next();
+    let Some(entry) = first else { return Ok(None) };
+    let entry = entry?;
+    if entry.path()?.to_string_lossy() != name || entry.size() > PEEK_MOST {
+        return Ok(None);
+    }
+    let mut bytes = Vec::with_capacity(entry.size() as usize);
+    entry.take(PEEK_MOST).read_to_end(&mut bytes)?;
+    Ok(Some(bytes))
+}
+
 /// A tar of `files` (archive path -> file on disk), zstd-compressed.
 pub fn pack(files: &[(String, PathBuf)]) -> io::Result<Vec<u8>> {
     let mut tar_bytes = Vec::new();

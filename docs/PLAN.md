@@ -60,7 +60,15 @@ License: Apache-2.0 with a NOTICE. The footer "Installer built with Walnut Insta
 - The uninstaller removes exactly what was installed, and Steam's `shortcuts.vdf` is restored byte for byte.
 - **Tests:** a binary VDF round trip, no duplicates, uninstall restoring the file, a fake Steam with two other games, a temp HOME only, and checksum mismatches (payload and manifest) refused.
 
-### M2: the walnut graphical installer
+### M2: the walnut graphical installer (done)
+**What shipped:**
+- **The screens:** `walnut-installer`'s `gui` feature (on by default): `flow.rs` (the screens as a state machine, unit-tested), `gui.rs` (eframe/egui, glow), `theme.rs` and `worker.rs` (the install on its own thread; Cancel rolls back).
+- **The welcome art:** the project's `[art] welcome` is packed first in the payload and read without unpacking (`payload::peek`).
+- **The free-space check:** the builder records `build.install_bytes`; `space::free_bytes` is asked of the nearest existing folder.
+- **Trusting the shortcut:** `desktop::trust_for` uses `gio` metadata on GNOME-family desktops, and the executable bit on KDE (including SteamOS and Bazzite) and the rest.
+- **For tests:** `WALNUT_SCREENSHOTS=<dir>` saves every screen; `WALNUT_SCALE` sets 1.0–2.0; `WALNUT_AUTOPILOT=1` presses through a real install.
+- **On real desktops:** checked on Wayland (a headless compositor) at 100/150/200%, plus a full install through the window (with a fake Steam). On real GNOME, KDE and SteamOS desktops it waits for a person; see QUESTIONS.md.
+
 **Acceptance:**
 - **Screens:** Welcome (the game's art and name, the version small), Folder (with a free-space check), Progress (with Cancel and rollback), Done (Launch ticked, desktop entry, desktop shortcut, Add to Steam; that last box hidden without Steam), and a themed dialog for closing Steam.
 - **Accessibility:** DPI 100–200% without clipping; keyboard (Enter for the primary button, Esc to cancel, Tab order); AccessKit names on every control.

@@ -9,3 +9,12 @@ authors.workspace = true
 
 [dependencies]
 walnut-core = { path = "../walnut-core" }
+eframe = { version = "0.37", default-features = false, features = ["glow", "wayland", "x11", "accesskit", "default_fonts"], optional = true }
+image = { version = "0.25", default-features = false, features = ["png"], optional = true }
+rfd = { version = "0.18", optional = true }
+
+[features]
+# The graphical installer (M2). Without it (e.g. the static musl build),
+# the installer is text mode only.
+default = ["gui"]
+gui = ["dep:eframe", "dep:image", "dep:rfd"]

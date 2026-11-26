@@ -60,10 +60,36 @@ pub fn write_launcher(path: &Path, text: &str, mark_trusted: bool) -> io::Result
         use std::os::unix::fs::PermissionsExt;
         fs::set_permissions(path, fs::Permissions::from_mode(0o755))?;
     }
-    if mark_trusted {
+    // M2: trusted the way this desktop wants (the executable bit is set above
+    // for all of them).
+    if mark_trusted && trust_for(&current_desktop(), &distro_id(&fs::read_to_string("/etc/os-release").unwrap_or_default())) == Trust::GioMetadata {
         let _ = std::process::Command::new("gio").args(["set"]).arg(path).args(["metadata::trusted", "true"]).status();
     }
     Ok(())
+}
+
+/// M2: how a desktop shortcut is made trusted so it opens on double-click.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Trust {
+    /// GNOME and its family read `metadata::trusted` (set with `gio`).
+    GioMetadata,
+    /// KDE Plasma (SteamOS's and Bazzite's desktop mode too) and the rest:
+    /// the executable bit is enough (Plasma asks once on first open).
+    ExecutableBit,
+}
+
+/// The quirk for `desktop` (`XDG_CURRENT_DESKTOP`, colon-separated) and
+/// `distro` (os-release's ID).
+pub fn trust_for(desktop: &str, distro: &str) -> Trust {
+    let gnome_like = ["GNOME", "UNITY", "X-CINNAMON", "CINNAMON", "BUDGIE", "PANTHEON", "MATE", "XFCE"];
+    let desktop = desktop.to_ascii_uppercase();
+    if desktop.split(':').any(|part| part == "KDE") || distro == "steamos" {
+        return Trust::ExecutableBit;
+    }
+    if desktop.split(':').any(|part| gnome_like.contains(&part)) {
+        return Trust::GioMetadata;
+    }
+    Trust::ExecutableBit
 }
 
 /// The desktop the player is using, from the XDG variables (for quirks).

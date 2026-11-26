@@ -7,5 +7,6 @@ pub mod desktop;
 pub mod install;
 pub mod payload;
 pub mod project;
+pub mod space;
 pub mod steam;
 pub mod vdf;

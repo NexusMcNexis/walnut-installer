@@ -15,6 +15,30 @@ pub struct Project {
     pub theme: Theme,
     #[serde(default)]
     pub text: Text,
+    /// M2: art the installer shows (builder side, relative to the project).
+    #[serde(default)]
+    pub art: Art,
+    /// M2: written by the builder, read by the installer (never hand-edited).
+    #[serde(default)]
+    pub build: Built,
+}
+
+/// The installer's own art.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
+pub struct Art {
+    /// A PNG on the Welcome screen (wide works best, e.g. 920x430). Packed
+    /// first in the payload, so the installer reads it without unpacking.
+    #[serde(default)]
+    pub welcome: String,
+}
+
+/// What the builder measured.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Default)]
+pub struct Built {
+    /// The bytes the install takes on disk (the files, unpacked), for the
+    /// Folder screen's free-space check.
+    #[serde(default)]
+    pub install_bytes: u64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]

@@ -26,6 +26,10 @@ hero = "art/steam_hero.png"
 logo = "art/steam_logo.png"
 icon = "art/steam_icon.png"
 
+# M2: the Welcome screen's art (here the wide Steam art).
+[art]
+welcome = "art/steam_wide.png"
+
 [text]
 welcome = "Welcome! This installs the Walnut sample game."
 done = "Run it from your applications menu, or from Steam."

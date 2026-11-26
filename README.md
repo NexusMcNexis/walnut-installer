@@ -4,7 +4,7 @@
 
 Players download one file, run it, and get what Windows players take for granted: a welcome screen, a folder picker, a progress bar, a Launch button, a menu entry with the game's icon, and (if they use Steam) the game in their Steam library with its artwork. No root, no sudo, no terminal required.
 
-> Status: **milestone 1 of 5.** The core, the headless builder and a text-mode installer work and are tested. The walnut-themed installer screens (M2) and the WYSIWYG builder (M3) are next. See [docs/PLAN.md](docs/PLAN.md).
+> Status: **milestone 2 of 5.** The core, the headless builder and a text-mode installer work and are tested. The walnut-themed installer screens (M2) and the WYSIWYG builder (M3) are next. See [docs/PLAN.md](docs/PLAN.md).
 
 ## Why
 
@@ -46,14 +46,29 @@ The sample "game" is a shell script. Its placeholder art is drawn by `examples/h
 
 ## Screenshots
 
-*Coming with milestone 2 (the walnut-themed screens).*
+The sample installer (`examples/hello`), in Walnut's default walnut-and-brass theme:
+
+| Welcome | Folder | Close Steam? |
+|---|---|---|
+| ![Welcome: the game's art, name and version](docs/screenshots/1-welcome.png) | ![Folder: where it goes, the space it needs, and what to add](docs/screenshots/2-folder.png) | ![Steam is running: close it first?](docs/screenshots/3-close-steam.png) |
+
+| Installing | Done |
+|---|---|
+| ![Installing, with Cancel](docs/screenshots/4-installing.png) | ![Done, with Launch ticked](docs/screenshots/5-done.png) |
+
+At 200% scale nothing is clipped ([the Folder screen at 200%](docs/screenshots/2-folder-200pct.png)).
+
+**Using it:**
+- **Keyboard:** Enter is the main button, Esc is Back or Cancel, and Tab moves between controls.
+- **Screen readers:** every control has a name (AccessKit).
+- **No display, or `--text` / `--yes`:** it's the text-mode installer.
 
 ## Roadmap
 
 | Milestone | What |
 |---|---|
 | **M1** (done) | Core library, headless builder, text-mode installer, Steam and desktop integration, uninstall |
-| **M2** | The walnut-themed graphical installer screens (DPI scaling, keyboard, screen readers); text mode as the fallback |
+| **M2** (done) | The walnut-themed graphical installer screens (DPI scaling, keyboard, screen readers); text mode as the fallback |
 | **M3** | The WYSIWYG builder app with a live preview of every screen |
 | **M4** | Release builds in CI (x86_64, then aarch64) |
 | **M5** | First real user: *Gemstone: A Different Path* adopts it |

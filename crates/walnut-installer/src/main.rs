@@ -1,8 +1,8 @@
-//! The program at the front of every Walnut installer. Milestone 1 is its
-//! text-mode form (the walnut-themed screens are milestone 2; text mode stays
-//! as the fallback when there is no display):
+//! The program at the front of every Walnut installer. With a display it
+//! opens the walnut-themed screens (M2); without one, or with --text or
+//! --yes, it is the text-mode installer (M1):
 //!
-//!   ./game-installer                 asks, with sensible defaults
+//!   ./game-installer                 the screens, or (text mode) asks with sensible defaults
 //!   ./game-installer --yes [--dir D] [--no-desktop-entry] [--desktop-shortcut]
 //!                    [--no-steam] [--no-launch]
 //!   <install dir>/.walnut/uninstall  removes it again (or --uninstall --dir D)
@@ -15,6 +15,15 @@ use std::process::ExitCode;
 use walnut_core::install::{self, Choices, Env};
 use walnut_core::project::CREDIT;
 use walnut_core::steam::{RealSteam, SteamProcess};
+
+#[cfg(any(test, feature = "gui"))]
+mod flow;
+#[cfg(feature = "gui")]
+mod gui;
+#[cfg(feature = "gui")]
+mod theme;
+#[cfg(feature = "gui")]
+mod worker;
 
 /// For tests and demos only (documented in CONTRIBUTING.md):
 /// `WALNUT_FAKE_STEAM_RUNNING=0|1` stands in for the real Steam, so a test
@@ -53,6 +62,8 @@ fn main() -> ExitCode {
     let result = if uninstalling {
         let dir = value("--dir").map(PathBuf::from).unwrap_or_else(|| me.parent().and_then(Path::parent).map(Path::to_path_buf).unwrap_or_default());
         uninstall(&dir, &env, interactive)
+    } else if let Some(shown) = try_gui(&me, &env, &has) {
+        shown
     } else {
         install_flow(&me, &env, interactive, &has, &value)
     };
@@ -63,6 +74,43 @@ fn main() -> ExitCode {
             ExitCode::FAILURE
         }
     }
+}
+
+/// M2: the graphical installer when there is a display and no --text or
+/// --yes; None to use text mode (no display, or the window couldn't open).
+#[cfg(feature = "gui")]
+fn try_gui(me: &Path, env: &Env, has: &dyn Fn(&str) -> bool) -> Option<Result<(), String>> {
+    let screenshots = std::env::var("WALNUT_SCREENSHOTS").ok().map(PathBuf::from);
+    let display = std::env::var_os("WAYLAND_DISPLAY").is_some() || std::env::var_os("DISPLAY").is_some();
+    if has("--text") || has("--yes") || !display {
+        return None;
+    }
+    let project = match install::project_of(me) {
+        Ok(project) => project,
+        Err(why) => return Some(Err(why)),
+    };
+    let layout = walnut_core::payload::layout(me).ok()?;
+    let welcome_art = walnut_core::payload::peek(me, &layout, walnut_core::payload::WELCOME_ART).ok().flatten();
+    let setup = gui::Setup {
+        installer: me.to_path_buf(),
+        default_dir: project.install_dir(&env.home),
+        steam_offered: project.steam.offer && install::steam_available(env),
+        project,
+        welcome_art,
+        screenshots,
+    };
+    match gui::run(setup) {
+        Ok(()) => Some(Ok(())),
+        Err(why) => {
+            eprintln!("  (The installer's window couldn't open: {why}. Using text mode.)");
+            None
+        }
+    }
+}
+
+#[cfg(not(feature = "gui"))]
+fn try_gui(_me: &Path, _env: &Env, _has: &dyn Fn(&str) -> bool) -> Option<Result<(), String>> {
+    None
 }
 
 fn install_flow(me: &Path, env: &Env, interactive: bool, has: &dyn Fn(&str) -> bool, value: &dyn Fn(&str) -> Option<String>) -> Result<(), String> {
