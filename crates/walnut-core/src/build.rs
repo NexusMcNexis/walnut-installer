@@ -20,6 +20,10 @@ pub fn payload_files(project: &Project, project_dir: &Path) -> Result<Vec<(Strin
     if !files.iter().any(|(name, _)| name == &project.game.executable) {
         return Err(format!("{} isn't in the game's folder", project.game.executable));
     }
+    // M2: the welcome art goes first, so the installer finds it at once.
+    if !project.art.welcome.is_empty() {
+        files.insert(0, (payload::WELCOME_ART.into(), project_dir.join(&project.art.welcome)));
+    }
     if !project.game.icon.is_empty() {
         files.push((".walnut/icon.png".into(), project_dir.join(&project.game.icon)));
     }
@@ -41,9 +45,11 @@ pub fn payload_files(project: &Project, project_dir: &Path) -> Result<Vec<(Strin
 /// with `program` (the walnut-installer binary) at its front.
 pub fn build(project_file: &Path, program: &Path, out: &Path) -> Result<Project, String> {
     let text = fs::read_to_string(project_file).map_err(|e| format!("{}: {e}", project_file.display()))?;
-    let project = Project::from_toml(&text)?;
+    let mut project = Project::from_toml(&text)?;
     let dir = project_file.parent().unwrap_or(Path::new("."));
     let files = payload_files(&project, dir)?;
+    // M2: what the install will take, for the free-space check.
+    project.build.install_bytes = files.iter().map(|(_, path)| fs::metadata(path).map(|m| m.len()).unwrap_or(0)).sum();
     let packed = payload::pack(&files).map_err(|e| e.to_string())?;
     let program = fs::read(program).map_err(|e| format!("the installer program {}: {e}", program.display()))?;
     payload::write_installer(out, &program, &packed, &project.to_toml()).map_err(|e| e.to_string())?;
