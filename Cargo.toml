@@ -3,7 +3,7 @@ resolver = "2"
 members = ["crates/walnut-core", "crates/walnut-cli", "crates/walnut-installer", "crates/walnut-ui", "crates/walnut-builder"]
 
 [workspace.package]
-version = "0.1.0"
+version = "0.3.0"
 edition = "2021"
 license = "Apache-2.0"
 repository = "https://github.com/NexusMcNexis/walnut-installer"
