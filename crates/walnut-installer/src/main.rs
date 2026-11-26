@@ -16,12 +16,8 @@ use walnut_core::install::{self, Choices, Env};
 use walnut_core::project::CREDIT;
 use walnut_core::steam::{RealSteam, SteamProcess};
 
-#[cfg(any(test, feature = "gui"))]
-mod flow;
 #[cfg(feature = "gui")]
 mod gui;
-#[cfg(feature = "gui")]
-mod theme;
 #[cfg(feature = "gui")]
 mod worker;
 

@@ -45,8 +45,15 @@ pub fn payload_files(project: &Project, project_dir: &Path) -> Result<Vec<(Strin
 /// with `program` (the walnut-installer binary) at its front.
 pub fn build(project_file: &Path, program: &Path, out: &Path) -> Result<Project, String> {
     let text = fs::read_to_string(project_file).map_err(|e| format!("{}: {e}", project_file.display()))?;
-    let mut project = Project::from_toml(&text)?;
-    let dir = project_file.parent().unwrap_or(Path::new("."));
+    let project = Project::from_toml(&text)?;
+    build_from(&project, project_file.parent().unwrap_or(Path::new(".")), program, out)
+}
+
+/// M3: builds `project` (its paths relative to `dir`) into `out`. `walnut
+/// build` and the builder app both come here, so they make the same file.
+pub fn build_from(project: &Project, dir: &Path, program: &Path, out: &Path) -> Result<Project, String> {
+    project.validate()?;
+    let mut project = project.clone();
     let files = payload_files(&project, dir)?;
     // M2: what the install will take, for the free-space check.
     project.build.install_bytes = files.iter().map(|(_, path)| fs::metadata(path).map(|m| m.len()).unwrap_or(0)).sum();

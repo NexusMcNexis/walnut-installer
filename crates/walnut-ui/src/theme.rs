@@ -42,6 +42,21 @@ impl Palette {
     /// egui's look in these colours: dark walnut panels, brass buttons with
     /// light text, a clear focus ring for keyboard use.
     pub fn apply(&self, ctx: &egui::Context) {
+        let visuals = self.visuals();
+        // Always the walnut look, whatever the desktop's light or dark.
+        ctx.set_theme(egui::Theme::Dark);
+        ctx.set_visuals_of(egui::Theme::Dark, visuals);
+        ctx.style_mut_of(egui::Theme::Dark, spacing);
+    }
+
+    /// M3: just one `Ui` in these colours (the builder's preview), the rest
+    /// of the window left as it is.
+    pub fn style_ui(&self, ui: &mut egui::Ui) {
+        ui.style_mut().visuals = self.visuals();
+        spacing(ui.style_mut());
+    }
+
+    pub fn visuals(&self) -> egui::Visuals {
         let mut visuals = egui::Visuals::dark();
         visuals.panel_fill = self.background;
         visuals.window_fill = self.bar;
@@ -63,15 +78,14 @@ impl Palette {
         visuals.widgets.hovered.bg_stroke = Stroke::new(2.0, self.title);
         visuals.widgets.noninteractive.fg_stroke = Stroke::new(1.0, self.body);
         visuals.widgets.noninteractive.bg_stroke = Stroke::new(1.0, darken(self.accent));
-        // Always the walnut look, whatever the desktop's light or dark.
-        ctx.set_theme(egui::Theme::Dark);
-        ctx.set_visuals_of(egui::Theme::Dark, visuals);
-        ctx.style_mut_of(egui::Theme::Dark, |style| {
-            style.spacing.button_padding = egui::vec2(14.0, 7.0);
-            style.spacing.item_spacing = egui::vec2(10.0, 10.0);
-            style.spacing.interact_size.y = 30.0;
-        });
+        visuals
     }
+}
+
+fn spacing(style: &mut egui::Style) {
+    style.spacing.button_padding = egui::vec2(14.0, 7.0);
+    style.spacing.item_spacing = egui::vec2(10.0, 10.0);
+    style.spacing.interact_size.y = 30.0;
 }
 
 fn brighten(c: Color32) -> Color32 {

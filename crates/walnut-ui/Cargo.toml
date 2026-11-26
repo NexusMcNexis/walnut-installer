@@ -1,0 +1,13 @@
+[package]
+name = "walnut-ui"
+description = "Walnut Installer: the installer's screens (drawn by the installer, and previewed live by the builder)."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[dependencies]
+walnut-core = { path = "../walnut-core" }
+eframe = { version = "0.37", default-features = false, features = ["glow", "wayland", "x11", "accesskit", "default_fonts"] }
+image = { version = "0.25", default-features = false, features = ["png"] }
