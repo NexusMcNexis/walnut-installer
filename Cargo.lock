@@ -2998,6 +2998,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "walnut-builder"
+version = "0.1.0"
+dependencies = [
+ "image",
+ "rfd",
+ "tempfile",
+ "walnut-core",
+ "walnut-ui",
+]
+
+[[package]]
 name = "walnut-cli"
 version = "0.1.0"
 dependencies = [
@@ -3022,9 +3033,18 @@ dependencies = [
 name = "walnut-installer"
 version = "0.1.0"
 dependencies = [
- "eframe",
  "image",
  "rfd",
+ "walnut-core",
+ "walnut-ui",
+]
+
+[[package]]
+name = "walnut-ui"
+version = "0.1.0"
+dependencies = [
+ "eframe",
+ "image",
  "walnut-core",
 ]
 

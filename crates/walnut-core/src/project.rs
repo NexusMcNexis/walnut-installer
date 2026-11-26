@@ -195,6 +195,11 @@ impl Project {
         }
     }
 
+    /// M3: the project's own rules (the builder lists them before building).
+    pub fn validate(&self) -> Result<(), String> {
+        self.check()
+    }
+
     fn check(&self) -> Result<(), String> {
         let id = &self.game.id;
         if id.is_empty() || !id.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_') {

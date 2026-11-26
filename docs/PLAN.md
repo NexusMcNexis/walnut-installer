@@ -76,7 +76,16 @@ License: Apache-2.0 with a NOTICE. The footer "Installer built with Walnut Insta
 - **Desktop quirks:** a desktop shortcut marked trusted where the desktop supports it (GNOME `gio`), with quirks keyed by `XDG_CURRENT_DESKTOP` and `/etc/os-release`. Tested on GNOME, KDE and SteamOS/Bazzite (desktop mode).
 - **Screenshots** in the README.
 
-### M3: the WYSIWYG builder
+### M3: the WYSIWYG builder (done)
+**What shipped:**
+- **Crates:** `walnut-ui` (the screens, shared by the installer and the builder: the preview draws the same functions) and `walnut-builder`.
+- **The builder's window:**
+  - a form for every project field;
+  - a tab per screen, previewed live in the project's colours and art;
+  - art pickers with drag-and-drop and Steam's size checks (`art::check`), and problems listed before Build;
+  - Save, and Build installer…
+- **Headless:** `walnut-builder --build` and `walnut build` both go through `walnut_core::build::build_from`, so they make the same file; e2e compares them byte for byte.
+
 **Acceptance:**
 - **A form for every project field:**
   - the game: name, version (shown small, never in a name), publisher, icon, the game's archive or folder, the executable inside it, the default folder;

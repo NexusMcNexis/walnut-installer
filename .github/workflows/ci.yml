@@ -17,7 +17,9 @@ jobs:
       - run: cargo test --workspace
       - name: Static (musl) release build, text mode only
         run: cargo build --release --target x86_64-unknown-linux-musl -p walnut-cli -p walnut-installer --no-default-features
-      - name: The graphical installer (glibc)
-        run: cargo build --release -p walnut-installer
+      - name: The graphical installer and the builder (glibc)
+        run: cargo build --release -p walnut-installer -p walnut-builder -p walnut-cli
+      - name: The builder's headless build matches walnut build
+        run: ./scripts/e2e.sh
       - name: The sample, end to end
         run: WALNUT_BIN=target/x86_64-unknown-linux-musl/release ./scripts/e2e.sh

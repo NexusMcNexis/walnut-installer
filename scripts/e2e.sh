@@ -9,6 +9,11 @@ BIN="${WALNUT_BIN:-$ROOT/target/release}"
 T="$(mktemp -d)"
 trap 'rm -rf "$T"' EXIT
 "$BIN/walnut" build "$ROOT/examples/hello/project.toml" --program "$BIN/walnut-installer" -o "$T/installer"
+# M3: the builder's headless build makes the very same file.
+if [ -x "$BIN/walnut-builder" ]; then
+	"$BIN/walnut-builder" --build "$ROOT/examples/hello/project.toml" --program "$BIN/walnut-installer" -o "$T/from-builder" > /dev/null
+	cmp "$T/installer" "$T/from-builder"
+fi
 H="$T/home"; S="$H/.local/share/Steam"; C="$S/userdata/39734314/config"
 mkdir -p "$S/config" "$C/grid"
 cp "$ROOT/tests/fixtures/loginusers.vdf" "$S/config/"

@@ -1,0 +1,24 @@
+[package]
+name = "walnut-builder"
+description = "Walnut Installer's builder: fill in a form, see every installer screen as you edit, and build."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "walnut-builder"
+path = "src/main.rs"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+walnut-core = { path = "../walnut-core" }
+walnut-ui = { path = "../walnut-ui" }
+image = { version = "0.25", default-features = false, features = ["png"] }
+rfd = "0.18"
+
+[dev-dependencies]
+tempfile.workspace = true
